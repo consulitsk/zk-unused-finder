@@ -1,0 +1,17 @@
+<window viewModel="@id('vm') @init('com.example.AdvancedViewModel')">
+    <zscript>
+        // Direct call from zscript
+        vm.runFromZscript();
+    </zscript>
+
+    <vbox>
+        <!-- Complex ZEL expression -->
+        <label value="@load(vm.user.address.street)" />
+
+        <!-- EL Expression -->
+        <label value="${'The value is: '.concat(vm.getDynamicValue('test'))}" />
+
+        <!-- Custom attribute that might contain a binding -->
+        <div custom-attributes="onClick=@command('runFromZscript')">Custom Attrs</div>
+    </vbox>
+</window>
