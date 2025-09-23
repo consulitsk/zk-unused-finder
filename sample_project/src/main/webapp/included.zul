@@ -1,0 +1,5 @@
+<!-- This file does not define its own ViewModel. It uses the context from where it's included. -->
+<div>
+    <label value="This is from the included file." />
+    <button label="Action (from included)" onClick="@command('actionFromIncluded')" />
+</div>

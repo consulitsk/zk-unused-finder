@@ -1,0 +1,8 @@
+<window viewModel="@id('vm') @init('com.example.UserViewModel')">
+    <vbox>
+        <label value="@load(vm.username)" />
+        <textbox value="@bind(vm.username)" />
+        <button label="Save" onClick="@command('saveUser')" />
+        <button label="Test Base" onClick="@command('commonBaseFunction')" />
+    </vbox>
+</window>

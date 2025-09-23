@@ -1,0 +1,11 @@
+<window>
+    <div viewModel="@id('main_vm') @init('com.example.NestedMainViewModel')">
+        <label value="@load(main_vm.mainTitle)" />
+        <button label="Save All" onClick="@command('saveAll', mainVm=main_vm)" />
+    </div>
+
+    <div viewModel="@id('detail_vm') @init('com.example.NestedDetailViewModel')">
+        <label value="@load(detail_vm.detailInfo)" />
+        <button label="Save Detail" onClick="@command('saveDetail', detailVm=detail_vm)" />
+    </div>
+</window>
