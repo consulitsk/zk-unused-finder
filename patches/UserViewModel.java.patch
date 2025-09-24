@@ -1,0 +1,13 @@
+--- /app/sample_project/src/main/java/com/example/UserViewModel.java
++++ /app/sample_project/src/main/java/com/example/UserViewModel.java
+@@ -35,10 +35,6 @@
+         System.out.println("Processing some internal data.");
+     }
+
+-    public void unusedMethod() {
+-        // This method is not used anywhere and should be detected by the tool.
+-        System.out.println("This should not be called.");
+-    }
+
+     @Override
+     public void toOverride() {
