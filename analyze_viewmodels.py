@@ -9,6 +9,12 @@ import difflib
 
 CACHE_FILE = ".viewmodel_analysis_cache.json"
 resolved_constants = {}
+VERBOSE = False
+
+def log_debug(message):
+    """Prints a debug message if verbose mode is enabled."""
+    if VERBOSE:
+        print(f"[DEBUG] {message}")
 
 def load_cache():
     """Loads the user decision cache from a file."""
@@ -39,11 +45,16 @@ class MethodInfo:
         self.used_in_java, self.used_in_zul = False, False
     def _extract_command_name(self):
         for ann_str in self.annotations_text:
+            log_debug(f"  Parsing annotation for command: {ann_str}")
             if match := re.search(r'@(?:Global|Default)?Command\((.*)\)', ann_str):
                 content = match.group(1).strip()
+                log_debug(f"    Found command content: {content}")
                 if content.startswith('"') and content.endswith('"'):
-                    return content.strip('"')
+                    resolved_name = content.strip('"')
+                    log_debug(f"    Resolved as string literal: '{resolved_name}'")
+                    return resolved_name
                 else:
+                    log_debug(f"    Attempting to resolve as constant: {content}")
                     # Assume it's a constant like `SomeClass.NAME`
                     parts = content.split('.')
                     if len(parts) >= 2: # Handle FQDNs in constants
@@ -53,7 +64,10 @@ class MethodInfo:
                         class_path = '.'.join(parts[:-1])
                         fqdn = self.imports.get(class_name, self.imports.get(class_path, f"{self.pkg}.{class_path}"))
                         const_fqdn = f"{fqdn}.{const_name}"
-                        return resolved_constants.get(const_fqdn)
+                        log_debug(f"    Looking for constant FQDN: {const_fqdn}")
+                        resolved_name = resolved_constants.get(const_fqdn)
+                        log_debug(f"    Resolved constant value: '{resolved_name}'")
+                        return resolved_name
         return None
     def is_used(self):
         for ann_text in self.annotations_text:
@@ -100,16 +114,20 @@ def extract_constants_from_ast(tree):
                     for declarator in const.declarators:
                         if isinstance(declarator.initializer, javalang.tree.Literal):
                             value = declarator.initializer.value.strip('"')
-                            resolved_constants[f"{cls_fqdn}.{declarator.name}"] = value
+                            const_fqdn = f"{cls_fqdn}.{declarator.name}"
+                            resolved_constants[const_fqdn] = value
+                            log_debug(f"Found constant: {const_fqdn} = '{value}'")
 
 def extract_viewmodels_from_ast(tree, lines, file_path):
     vms = {}; pkg = tree.package.name if tree.package else ""; imports = {i.path.split('.')[-1]: i.path for i in tree.imports}
+    log_debug(f"Parsing Java file for ViewModels: {file_path}")
     for _, cls in tree.filter(javalang.tree.ClassDeclaration):
         if not cls.name.endswith("ViewModel"): continue
         fqdn = f"{pkg}.{cls.name}" if pkg else cls.name
         ext_fqdn = None
         if cls.extends: ext_fqdn = imports.get(cls.extends.name, f"{pkg}.{cls.extends.name}")
         vm_info = ViewModelInfo(cls.name, fqdn, file_path, ext_fqdn)
+        log_debug(f"Found ViewModel: {fqdn} (extends {ext_fqdn})")
         for meth in cls.methods:
             if 'public' in meth.modifiers:
                 anns = []
@@ -119,21 +137,25 @@ def extract_viewmodels_from_ast(tree, lines, file_path):
                     raw_anns = get_raw_text(lines, meth.annotations[0].position, (meth.position.line, meth.position.column))
                     anns = [a.strip() for a in raw_anns.split('\n') if a.strip().startswith('@')]
                 vm_info.methods[meth.name] = MethodInfo(meth.name, anns, meth.position.line, block_start_line, imports, pkg)
+                log_debug(f"  Found method: {meth.name} with annotations {anns}")
         vms[fqdn] = vm_info
     return vms
 
 def analyze_java_files(project_path):
     vms, asts = {}, {}
     java_files = []
+    log_debug(f"Starting Java file analysis in: {project_path}")
     for root, _, files in os.walk(project_path):
         for file in files:
             if file.endswith(".java"):
                 java_files.append(os.path.join(root, file))
 
+    log_debug(f"Found {len(java_files)} Java files to analyze.")
     for path in java_files:
         tree, lines = parse_java_file(path)
         if tree:
             asts[path] = tree
+            log_debug(f"Extracting constants from: {path}")
             extract_constants_from_ast(tree)
 
     for path, tree in asts.items():
@@ -153,11 +175,14 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
     abs_path = os.path.abspath(file_path)
     if abs_path in visited: return
     visited.add(abs_path)
+    log_debug(f"Parsing ZUL file: {file_path}")
 
     try:
         tree = ET.parse(file_path)
         xml_root = tree.getroot()
-    except (ET.ParseError, FileNotFoundError): return
+    except (ET.ParseError, FileNotFoundError):
+        log_debug(f"  Could not parse ZUL file.")
+        return
 
     # Build parent map for context lookup
     parent_map = {c: p for p in xml_root.iter() for c in p}
@@ -167,20 +192,25 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
     for elem in xml_root.iter():
         vm_attrib = elem.attrib.get('viewModel')
         if vm_attrib:
+            log_debug(f"  Found viewModel attribute: {vm_attrib}")
             has_local_vm = True
             id_m, init_m = ZUL_VM_ID_REGEX.search(vm_attrib), ZUL_VM_INIT_REGEX.search(vm_attrib)
             if id_m and init_m:
                 alias, fqdn = id_m.group(1), init_m.group(1)
                 local_vm_map[alias] = fqdn
                 all_usages[fqdn].add(fqdn)
+                log_debug(f"  Mapped local alias '{alias}' to FQDN '{fqdn}'")
 
     context_map = local_vm_map if has_local_vm or not parent_context else parent_context
+    log_debug(f"  Using context map for this ZUL: {context_map}")
 
     for elem in xml_root.iter():
         # Scan attributes
-        for _, value in elem.attrib.items():
+        for attr_name, value in elem.attrib.items():
+            log_debug(f"    Scanning element <{elem.tag}>, attribute '{attr_name}', value: \"{value}\"")
             # Commands - find context by walking up the tree
             for cmd in COMMAND_REGEX.findall(value):
+                log_debug(f"      Found command match: '{cmd}'")
                 curr = elem
                 while curr in parent_map:
                     if vm_attrib := curr.attrib.get('viewModel'):
@@ -188,29 +218,44 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
                             alias = id_m.group(1)
                             if alias in context_map:
                                 all_usages[context_map[alias]].add(cmd)
+                                log_debug(f"        Added command usage '{cmd}' to {context_map[alias]}")
                                 break
                     curr = parent_map[curr]
                 else: # Fallback for root element or no context found
-                    if 'vm' in context_map: all_usages[context_map['vm']].add(cmd)
+                    if 'vm' in context_map:
+                        all_usages[context_map['vm']].add(cmd)
+                        log_debug(f"        Added command usage '{cmd}' to {context_map['vm']} (fallback)")
             # Member access
             for alias, member in MEMBER_ACCESS_REGEX.findall(value):
-                if alias in context_map: all_usages[context_map[alias]].add(member.split('.')[0])
+                log_debug(f"      Found member access match: alias='{alias}', member='{member}'")
+                if alias in context_map:
+                    all_usages[context_map[alias]].add(member.split('.')[0])
+                    log_debug(f"        Added member usage '{member}' to {context_map[alias]}")
 
         # Scan text and zscript
         scan_text = (elem.text or "") + (elem.find('.//zscript').text if elem.find('.//zscript') is not None and elem.find('.//zscript').text else "")
-        for alias, member in MEMBER_ACCESS_REGEX.findall(scan_text):
-            if alias in context_map: all_usages[context_map[alias]].add(member)
+        if scan_text.strip():
+            log_debug(f"    Scanning text/zscript content of <{elem.tag}>")
+            for alias, member in MEMBER_ACCESS_REGEX.findall(scan_text):
+                log_debug(f"      Found member access match in text: alias='{alias}', member='{member}'")
+                if alias in context_map:
+                    all_usages[context_map[alias]].add(member)
+                    log_debug(f"        Added member usage '{member}' to {context_map[alias]}")
 
     # Handle includes
     for include in xml_root.iter('include'):
         if src := include.attrib.get('src'):
+            log_debug(f"  Found include, recursing into: {src}")
             included_path = os.path.join(webapp_root, src.lstrip('/'))
             find_zul_usages_recursive(included_path, webapp_root, all_usages, context_map, visited)
 
 def find_zul_usages(project_path):
     all_usages = defaultdict(set)
     webapp_root = os.path.join(project_path, 'src', 'main', 'webapp')
-    if not os.path.isdir(webapp_root): return all_usages
+    if not os.path.isdir(webapp_root):
+        log_debug(f"Webapp root not found at: {webapp_root}")
+        return all_usages
+    log_debug(f"Starting ZUL usage analysis in: {webapp_root}")
     for root, _, files in os.walk(webapp_root):
         for file in files:
             if file.endswith(".zul"):
@@ -237,19 +282,28 @@ def analyze_java_usages(asts, view_models):
             if fqdn in view_models: view_models[fqdn].is_used_in_java = True
 
 def run_analysis(view_models, zul_usages):
+    log_debug(f"--- Starting Final Analysis Phase ---")
+    log_debug(f"ZUL Usages Found: {dict(zul_usages)}")
     for fqdn, names in zul_usages.items():
         if fqdn in view_models:
+            log_debug(f"Processing ZUL usages for ViewModel: {fqdn}")
             view_models[fqdn].is_used_in_zul = True
             for name in names:
+                log_debug(f"  Processing usage '{name}'")
                 curr_fqdn = fqdn
                 while curr_fqdn in view_models:
                     vm, found = view_models[curr_fqdn], False
                     for meth in vm.methods.values():
-                        if meth.name == name or meth.command_name == name: meth.used_in_zul = True; found = True
+                        if meth.name == name or meth.command_name == name:
+                            meth.used_in_zul = True; found = True
+                            log_debug(f"    Marking '{meth.name}' as used in ZUL (direct or command match)")
                         getter, setter, is_getter = f"get{name[0].upper()}{name[1:]}", f"set{name[0].upper()}{name[1:]}", f"is{name[0].upper()}{name[1:]}"
-                        if meth.name in (getter, setter, is_getter): meth.used_in_zul = True
+                        if meth.name in (getter, setter, is_getter):
+                            meth.used_in_zul = True
+                            log_debug(f"    Marking '{meth.name}' as used in ZUL (getter/setter match for '{name}')")
                     if found: break
                     curr_fqdn = vm.extends
+    log_debug("--- Propagating usage status up the inheritance chain ---")
     for fqdn, vm in view_models.items():
         parent_fqdn = vm.extends
         while parent_fqdn in view_models:
@@ -266,10 +320,22 @@ def get_unused_methods(view_models):
     a ViewModelInfo object and a list of its unused MethodInfo objects.
     """
     used_vms_with_issues = []
+    log_debug("--- Identifying unused methods ---")
     for fqdn, vm in sorted(view_models.items()):
+        log_debug(f"Checking ViewModel: {fqdn}")
         if not vm.is_used():
+            log_debug(f"  ViewModel is completely unused.")
             continue
-        unused_meths = [meth for meth in sorted(vm.methods.values(), key=lambda m: m.line) if not meth.is_used()]
+
+        unused_meths = []
+        for meth in sorted(vm.methods.values(), key=lambda m: m.line):
+            is_used_result = meth.is_used()
+            if not is_used_result:
+                log_debug(f"  Method '{meth.name}' is UNUSED. Reason: used_in_java={meth.used_in_java}, used_in_zul={meth.used_in_zul}, annotations={meth.annotations_text}")
+                unused_meths.append(meth)
+            else:
+                log_debug(f"  Method '{meth.name}' is USED.")
+
         if unused_meths:
             used_vms_with_issues.append((vm, unused_meths))
     return used_vms_with_issues
@@ -422,7 +488,11 @@ def main():
     parser.add_argument("project_path", help="Path to the root of the Java project.")
     parser.add_argument("--interactive", action="store_true", help="Enable interactive mode to generate removal patches.")
     parser.add_argument("--reset-cache", action="store_true", help="Reset the cache of user decisions.")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging for debugging.")
     args = parser.parse_args()
+
+    global VERBOSE
+    VERBOSE = args.verbose
 
     if args.reset_cache:
         if os.path.exists(CACHE_FILE):
