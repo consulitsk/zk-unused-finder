@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<window viewModel="@id('vm') @init('com.example.WhitespaceTestViewModel')">
-    <label value="@load(vm . spacedYears)" />
-</window>

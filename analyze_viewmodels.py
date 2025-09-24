@@ -168,7 +168,7 @@ def analyze_java_files(project_path):
 ZUL_VM_ID_REGEX = re.compile(r"@id\('([^']*)'\)")
 ZUL_VM_INIT_REGEX = re.compile(r"@init\('([^']*)'\)")
 COMMAND_REGEX = re.compile(r"""@(?:global-)?command\(['"]([^'"]*)['"][,)]""")
-MEMBER_ACCESS_REGEX = re.compile(r"([a-zA-Z0-9_]+)\s*\.\s*([a-zA-Z0-9_]+)")
+MEMBER_ACCESS_REGEX = re.compile(r"([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)")
 
 def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context=None, visited=None):
     if visited is None: visited = set()
@@ -251,16 +251,27 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
 
 def find_zul_usages(project_path):
     all_usages = defaultdict(set)
-    webapp_root = os.path.join(project_path, 'src', 'main', 'webapp')
-    if not os.path.isdir(webapp_root):
-        log_debug(f"Webapp root not found at: {webapp_root}")
+
+    webapp_roots = []
+    log_debug(f"Searching for 'webapp' directories in project root: {project_path}")
+    for root, dirs, _ in os.walk(project_path):
+        if 'webapp' in dirs and root.endswith(os.path.join('src', 'main')):
+            webapp_roots.append(os.path.join(root, 'webapp'))
+
+    if not webapp_roots:
+        log_debug("No 'src/main/webapp' directories found.")
         return all_usages
-    log_debug(f"Starting ZUL usage analysis in: {webapp_root}")
-    for root, _, files in os.walk(webapp_root):
-        for file in files:
-            if file.endswith(".zul"):
-                file_path = os.path.join(root, file)
-                find_zul_usages_recursive(file_path, webapp_root, all_usages)
+
+    log_debug(f"Found {len(webapp_roots)} webapp root(s): {webapp_roots}")
+
+    for webapp_root in webapp_roots:
+        log_debug(f"Analyzing ZULs in: {webapp_root}")
+        for root, _, files in os.walk(webapp_root):
+            for file in files:
+                if file.endswith(".zul"):
+                    file_path = os.path.join(root, file)
+                    find_zul_usages_recursive(file_path, webapp_root, all_usages)
+
     return all_usages
 
 # --- Java Usage Analyzer & Reporting (Unchanged) ---
