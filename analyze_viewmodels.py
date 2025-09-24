@@ -8,6 +8,7 @@ import json
 import difflib
 
 CACHE_FILE = ".viewmodel_analysis_cache.json"
+resolved_constants = {}
 
 def load_cache():
     """Loads the user decision cache from a file."""
@@ -29,18 +30,34 @@ def save_cache(cache):
 
 # Data Structures and Java Parser (no changes)
 class MethodInfo:
-    def __init__(self, name, annotations_text, line, block_start_line):
+    def __init__(self, name, annotations_text, line, block_start_line, imports, pkg):
         self.name, self.annotations_text, self.line = name, annotations_text, line
         self.block_start_line = block_start_line
+        self.imports = imports
+        self.pkg = pkg
         self.command_name = self._extract_command_name()
         self.used_in_java, self.used_in_zul = False, False
     def _extract_command_name(self):
         for ann_str in self.annotations_text:
-            if match := re.search(r'@(?:Global|Default)?Command\("([^"]*)"\)', ann_str): return match.group(1)
+            if match := re.search(r'@(?:Global|Default)?Command\((.*)\)', ann_str):
+                content = match.group(1).strip()
+                if content.startswith('"') and content.endswith('"'):
+                    return content.strip('"')
+                else:
+                    # Assume it's a constant like `SomeClass.NAME`
+                    parts = content.split('.')
+                    if len(parts) >= 2: # Handle FQDNs in constants
+                        class_name = parts[-2]
+                        const_name = parts[-1]
+                        # Resolve FQDN of class_name
+                        class_path = '.'.join(parts[:-1])
+                        fqdn = self.imports.get(class_name, self.imports.get(class_path, f"{self.pkg}.{class_path}"))
+                        const_fqdn = f"{fqdn}.{const_name}"
+                        return resolved_constants.get(const_fqdn)
         return None
     def is_used(self):
         for ann_text in self.annotations_text:
-            if any(ann_text.startswith(lifecycle_ann) for lifecycle_ann in ['@Init', '@AfterCompose', '@Destroy']): return True
+            if any(ann_text.startswith(lifecycle_ann) for lifecycle_ann in ['@Init', '@AfterCompose', '@Destroy', '@GlobalCommand']): return True
         return self.used_in_java or self.used_in_zul
 
 class ViewModelInfo:
@@ -65,6 +82,26 @@ def parse_java_file(file_path):
         return javalang.parse.parse(content), content.splitlines()
     except Exception: return None, None
 
+def extract_constants_from_ast(tree):
+    pkg = tree.package.name if tree.package else ""
+    for _, cls in tree.filter(javalang.tree.ClassDeclaration):
+        cls_fqdn = f"{pkg}.{cls.name}" if pkg else cls.name
+        for const in cls.fields:
+            if 'public' in const.modifiers and 'static' in const.modifiers and 'final' in const.modifiers:
+                # Check for String type, which might be BasicType or ReferenceType
+                const_type = const.type
+                is_string = False
+                if isinstance(const_type, javalang.tree.BasicType) and const_type.name == 'String':
+                    is_string = True
+                elif isinstance(const_type, javalang.tree.ReferenceType) and const_type.name == 'String':
+                    is_string = True
+
+                if is_string:
+                    for declarator in const.declarators:
+                        if isinstance(declarator.initializer, javalang.tree.Literal):
+                            value = declarator.initializer.value.strip('"')
+                            resolved_constants[f"{cls_fqdn}.{declarator.name}"] = value
+
 def extract_viewmodels_from_ast(tree, lines, file_path):
     vms = {}; pkg = tree.package.name if tree.package else ""; imports = {i.path.split('.')[-1]: i.path for i in tree.imports}
     for _, cls in tree.filter(javalang.tree.ClassDeclaration):
@@ -81,24 +118,34 @@ def extract_viewmodels_from_ast(tree, lines, file_path):
                     block_start_line = meth.annotations[0].position.line
                     raw_anns = get_raw_text(lines, meth.annotations[0].position, (meth.position.line, meth.position.column))
                     anns = [a.strip() for a in raw_anns.split('\n') if a.strip().startswith('@')]
-                vm_info.methods[meth.name] = MethodInfo(meth.name, anns, meth.position.line, block_start_line)
+                vm_info.methods[meth.name] = MethodInfo(meth.name, anns, meth.position.line, block_start_line, imports, pkg)
         vms[fqdn] = vm_info
     return vms
 
 def analyze_java_files(project_path):
     vms, asts = {}, {}
+    java_files = []
     for root, _, files in os.walk(project_path):
         for file in files:
             if file.endswith(".java"):
-                path = os.path.join(root, file)
-                tree, lines = parse_java_file(path)
-                if tree: asts[path] = tree; vms.update(extract_viewmodels_from_ast(tree, lines, path))
+                java_files.append(os.path.join(root, file))
+
+    for path in java_files:
+        tree, lines = parse_java_file(path)
+        if tree:
+            asts[path] = tree
+            extract_constants_from_ast(tree)
+
+    for path, tree in asts.items():
+         _, lines = parse_java_file(path)
+         vms.update(extract_viewmodels_from_ast(tree, lines, path))
+
     return vms, asts
 
 # --- ZUL Parser (4th and Final Rewrite) ---
 ZUL_VM_ID_REGEX = re.compile(r"@id\('([^']*)'\)")
 ZUL_VM_INIT_REGEX = re.compile(r"@init\('([^']*)'\)")
-COMMAND_REGEX = re.compile(r"@(?:global-)?command\('([^']*)'[,)]")
+COMMAND_REGEX = re.compile(r"""@(?:global-)?command\(['"]([^'"]*)['"][,)]""")
 MEMBER_ACCESS_REGEX = re.compile(r"([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)")
 
 def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context=None, visited=None):
