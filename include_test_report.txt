@@ -1,0 +1,363 @@
+Analyzing project: sample_project...
+
+[DEBUG] Starting Java file analysis in: sample_project
+[DEBUG] Found 13 Java files to analyze.
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/QuoteTestViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/CompletelyUnusedViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/NestedMainViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/User.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/OtherService.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/OrderViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/UserViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/ParentViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/IncludeTestViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/BaseViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/GlobalCommandTestViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/AdvancedViewModel.java
+[DEBUG] Extracting constants from: sample_project/src/main/java/com/example/NestedDetailViewModel.java
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/QuoteTestViewModel.java
+[DEBUG] Found ViewModel: com.example.QuoteTestViewModel (extends None)
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: aCommandWithDoubleClick with annotations ['@Command    public v']
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: anUnusedCommand with annotations ['@Command    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/CompletelyUnusedViewModel.java
+[DEBUG] Found ViewModel: com.example.CompletelyUnusedViewModel (extends None)
+[DEBUG]   Found method: getMessage with annotations []
+[DEBUG]   Found method: setMessage with annotations []
+[DEBUG]   Found method: doNothing with annotations []
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/NestedMainViewModel.java
+[DEBUG] Found ViewModel: com.example.NestedMainViewModel (extends None)
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: saveAll with annotations ['@Command    public v']
+[DEBUG]   Found method: getMainTitle with annotations []
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/User.java
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/OtherService.java
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/OrderViewModel.java
+[DEBUG] Found ViewModel: com.example.OrderViewModel (extends com.example.BaseViewModel)
+[DEBUG]   Found method: getOrderId with annotations []
+[DEBUG]   Found method: setOrderId with annotations []
+[DEBUG]   Parsing annotation for command: @Command("submitOrder")    public v
+[DEBUG]     Found command content: "submitOrder"
+[DEBUG]     Resolved as string literal: 'submitOrder'
+[DEBUG]   Found method: doSubmit with annotations ['@Command("submitOrder")    public v']
+[DEBUG]   Parsing annotation for command: @GlobalCommand("refreshOrders")    public v
+[DEBUG]     Found command content: "refreshOrders"
+[DEBUG]     Resolved as string literal: 'refreshOrders'
+[DEBUG]   Found method: refresh with annotations ['@GlobalCommand("refreshOrders")    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/UserViewModel.java
+[DEBUG] Found ViewModel: com.example.UserViewModel (extends com.example.BaseViewModel)
+[DEBUG]   Parsing annotation for command: @Init    public v
+[DEBUG]   Found method: init with annotations ['@Init    public v']
+[DEBUG]   Found method: getUsername with annotations []
+[DEBUG]   Parsing annotation for command: @NotifyChange("username")    public v
+[DEBUG]   Found method: setUsername with annotations ['@NotifyChange("username")    public v']
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: saveUser with annotations ['@Command    public v']
+[DEBUG]   Found method: processInternalData with annotations []
+[DEBUG]   Found method: unusedMethod with annotations []
+[DEBUG]   Parsing annotation for command: @Override    public v
+[DEBUG]   Found method: toOverride with annotations ['@Override    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/ParentViewModel.java
+[DEBUG] Found ViewModel: com.example.ParentViewModel (extends None)
+[DEBUG]   Found method: getParentMessage with annotations []
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: actionFromIncluded with annotations ['@Command    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/IncludeTestViewModel.java
+[DEBUG] Found ViewModel: com.example.IncludeTestViewModel (extends None)
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: commandInMain with annotations ['@Command    public v']
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: commandInRelative with annotations ['@Command    public v']
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: commandInAbsolute with annotations ['@Command    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/BaseViewModel.java
+[DEBUG] Found ViewModel: com.example.BaseViewModel (extends None)
+[DEBUG]   Found method: commonBaseFunction with annotations []
+[DEBUG]   Found method: toOverride with annotations []
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/GlobalCommandTestViewModel.java
+[DEBUG] Found ViewModel: com.example.GlobalCommandTestViewModel (extends None)
+[DEBUG]   Parsing annotation for command: @GlobalCommand    public v
+[DEBUG]   Found method: aGlobalCommand with annotations ['@GlobalCommand    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/AdvancedViewModel.java
+[DEBUG] Found ViewModel: com.example.AdvancedViewModel (extends None)
+[DEBUG]   Found method: getUser with annotations []
+[DEBUG]   Found method: getDynamicValue with annotations []
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: runFromZscript with annotations ['@Command    public v']
+[DEBUG] Parsing Java file for ViewModels: sample_project/src/main/java/com/example/NestedDetailViewModel.java
+[DEBUG] Found ViewModel: com.example.NestedDetailViewModel (extends None)
+[DEBUG]   Parsing annotation for command: @Command    public v
+[DEBUG]   Found method: saveDetail with annotations ['@Command    public v']
+[DEBUG]   Found method: getDetailInfo with annotations []
+[DEBUG] Searching for 'webapp' directories in project root: sample_project
+[DEBUG] Found 1 webapp root(s): ['sample_project/src/main/webapp']
+[DEBUG] Analyzing ZULs in: sample_project/src/main/webapp
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/nested_vms.zul
+[DEBUG]   Found viewModel attribute: @id('main_vm') @init('com.example.NestedMainViewModel')
+[DEBUG]   Mapped local alias 'main_vm' to FQDN 'com.example.NestedMainViewModel'
+[DEBUG]   Found viewModel attribute: @id('detail_vm') @init('com.example.NestedDetailViewModel')
+[DEBUG]   Mapped local alias 'detail_vm' to FQDN 'com.example.NestedDetailViewModel'
+[DEBUG]   Using context map for this ZUL: {'main_vm': 'com.example.NestedMainViewModel', 'detail_vm': 'com.example.NestedDetailViewModel'}
+[DEBUG]     Scanning element <div>, attribute 'viewModel', value: "@id('main_vm') @init('com.example.NestedMainViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <label>, attribute 'value', value: "@load(main_vm.mainTitle)"
+[DEBUG]       Found member access match: alias='main_vm', member='mainTitle'
+[DEBUG]         Added member usage 'mainTitle' to com.example.NestedMainViewModel
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Save All"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('saveAll', mainVm=main_vm)"
+[DEBUG]       Found command match: 'saveAll'
+[DEBUG]         Added command usage 'saveAll' to com.example.NestedMainViewModel
+[DEBUG]     Scanning element <div>, attribute 'viewModel', value: "@id('detail_vm') @init('com.example.NestedDetailViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <label>, attribute 'value', value: "@load(detail_vm.detailInfo)"
+[DEBUG]       Found member access match: alias='detail_vm', member='detailInfo'
+[DEBUG]         Added member usage 'detailInfo' to com.example.NestedDetailViewModel
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Save Detail"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('saveDetail', detailVm=detail_vm)"
+[DEBUG]       Found command match: 'saveDetail'
+[DEBUG]         Added command usage 'saveDetail' to com.example.NestedDetailViewModel
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/user.zul
+[DEBUG]   Found viewModel attribute: @id('vm') @init('com.example.UserViewModel')
+[DEBUG]   Mapped local alias 'vm' to FQDN 'com.example.UserViewModel'
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.UserViewModel'}
+[DEBUG]     Scanning element <window>, attribute 'viewModel', value: "@id('vm') @init('com.example.UserViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <label>, attribute 'value', value: "@load(vm.username)"
+[DEBUG]       Found member access match: alias='vm', member='username'
+[DEBUG]         Added member usage 'username' to com.example.UserViewModel
+[DEBUG]     Scanning element <textbox>, attribute 'value', value: "@bind(vm.username)"
+[DEBUG]       Found member access match: alias='vm', member='username'
+[DEBUG]         Added member usage 'username' to com.example.UserViewModel
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Save"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('saveUser')"
+[DEBUG]       Found command match: 'saveUser'
+[DEBUG]         Added command usage 'saveUser' to com.example.UserViewModel (fallback)
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Test Base"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('commonBaseFunction')"
+[DEBUG]       Found command match: 'commonBaseFunction'
+[DEBUG]         Added command usage 'commonBaseFunction' to com.example.UserViewModel (fallback)
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/parent.zul
+[DEBUG]   Found viewModel attribute: @id('vm') @init('com.example.ParentViewModel')
+[DEBUG]   Mapped local alias 'vm' to FQDN 'com.example.ParentViewModel'
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.ParentViewModel'}
+[DEBUG]     Scanning element <window>, attribute 'viewModel', value: "@id('vm') @init('com.example.ParentViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <label>, attribute 'value', value: "@load(vm.parentMessage)"
+[DEBUG]       Found member access match: alias='vm', member='parentMessage'
+[DEBUG]         Added member usage 'parentMessage' to com.example.ParentViewModel
+[DEBUG]     Scanning element <include>, attribute 'src', value: "/included.zul"
+[DEBUG]       Found member access match: alias='included', member='zul'
+[DEBUG]   Found include, recursing into: /included.zul
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/included.zul
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.ParentViewModel'}
+[DEBUG]     Scanning element <label>, attribute 'value', value: "This is from the included file."
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Action (from included)"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('actionFromIncluded')"
+[DEBUG]       Found command match: 'actionFromIncluded'
+[DEBUG]         Added command usage 'actionFromIncluded' to com.example.ParentViewModel (fallback)
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/quotetest.zul
+[DEBUG]   Found viewModel attribute: @id('vm') @init('com.example.QuoteTestViewModel')
+[DEBUG]   Mapped local alias 'vm' to FQDN 'com.example.QuoteTestViewModel'
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.QuoteTestViewModel'}
+[DEBUG]     Scanning element <window>, attribute 'viewModel', value: "@id('vm') @init('com.example.QuoteTestViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('aCommandWithDoubleClick')"
+[DEBUG]       Found command match: 'aCommandWithDoubleClick'
+[DEBUG]         Added command usage 'aCommandWithDoubleClick' to com.example.QuoteTestViewModel (fallback)
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/included.zul
+[DEBUG]   Using context map for this ZUL: {}
+[DEBUG]     Scanning element <label>, attribute 'value', value: "This is from the included file."
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Action (from included)"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('actionFromIncluded')"
+[DEBUG]       Found command match: 'actionFromIncluded'
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/advanced.zul
+[DEBUG]   Found viewModel attribute: @id('vm') @init('com.example.AdvancedViewModel')
+[DEBUG]   Mapped local alias 'vm' to FQDN 'com.example.AdvancedViewModel'
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.AdvancedViewModel'}
+[DEBUG]     Scanning element <window>, attribute 'viewModel', value: "@id('vm') @init('com.example.AdvancedViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning text/zscript content of <window>
+[DEBUG]       Found member access match in text: alias='vm', member='runFromZscript'
+[DEBUG]         Added member usage 'runFromZscript' to com.example.AdvancedViewModel
+[DEBUG]     Scanning text/zscript content of <zscript>
+[DEBUG]       Found member access match in text: alias='vm', member='runFromZscript'
+[DEBUG]         Added member usage 'runFromZscript' to com.example.AdvancedViewModel
+[DEBUG]     Scanning element <label>, attribute 'value', value: "@load(vm.user.address.street)"
+[DEBUG]       Found member access match: alias='vm', member='user'
+[DEBUG]         Added member usage 'user' to com.example.AdvancedViewModel
+[DEBUG]       Found member access match: alias='address', member='street'
+[DEBUG]     Scanning element <label>, attribute 'value', value: "${'The value is: '.concat(vm.getDynamicValue('test'))}"
+[DEBUG]       Found member access match: alias='vm', member='getDynamicValue'
+[DEBUG]         Added member usage 'getDynamicValue' to com.example.AdvancedViewModel
+[DEBUG]     Scanning element <div>, attribute 'custom-attributes', value: "onClick=@command('runFromZscript')"
+[DEBUG]       Found command match: 'runFromZscript'
+[DEBUG]         Added command usage 'runFromZscript' to com.example.AdvancedViewModel (fallback)
+[DEBUG]     Scanning text/zscript content of <div>
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/order.zul
+[DEBUG]   Found viewModel attribute: @id('vm') @init('com.example.OrderViewModel')
+[DEBUG]   Mapped local alias 'vm' to FQDN 'com.example.OrderViewModel'
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.OrderViewModel'}
+[DEBUG]     Scanning element <window>, attribute 'viewModel', value: "@id('vm') @init('com.example.OrderViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <label>, attribute 'value', value: "Order ID:"
+[DEBUG]     Scanning element <textbox>, attribute 'value', value: "@bind(vm.orderId)"
+[DEBUG]       Found member access match: alias='vm', member='orderId'
+[DEBUG]         Added member usage 'orderId' to com.example.OrderViewModel
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Submit Order"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('submitOrder')"
+[DEBUG]       Found command match: 'submitOrder'
+[DEBUG]         Added command usage 'submitOrder' to com.example.OrderViewModel (fallback)
+[DEBUG]     Scanning element <button>, attribute 'label', value: "Refresh All Orders"
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@global-command('refreshOrders')"
+[DEBUG]       Found command match: 'refreshOrders'
+[DEBUG]         Added command usage 'refreshOrders' to com.example.OrderViewModel (fallback)
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/absolute/included_absolute.zul
+[DEBUG]   Using context map for this ZUL: {}
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('commandInAbsolute')"
+[DEBUG]       Found command match: 'commandInAbsolute'
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/includes/main.zul
+[DEBUG]   Found viewModel attribute: @id('vm') @init('com.example.IncludeTestViewModel')
+[DEBUG]   Mapped local alias 'vm' to FQDN 'com.example.IncludeTestViewModel'
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.IncludeTestViewModel'}
+[DEBUG]     Scanning element <window>, attribute 'viewModel', value: "@id('vm') @init('com.example.IncludeTestViewModel')"
+[DEBUG]       Found member access match: alias='com', member='example'
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('commandInMain')"
+[DEBUG]       Found command match: 'commandInMain'
+[DEBUG]         Added command usage 'commandInMain' to com.example.IncludeTestViewModel (fallback)
+[DEBUG]     Scanning element <include>, attribute 'src', value: "relative/included_relative.zul"
+[DEBUG]       Found member access match: alias='included_relative', member='zul'
+[DEBUG]     Scanning element <include>, attribute 'src', value: "/absolute/included_absolute.zul"
+[DEBUG]       Found member access match: alias='included_absolute', member='zul'
+[DEBUG]   Found include, recursing into: relative/included_relative.zul
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/includes/relative/included_relative.zul
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.IncludeTestViewModel'}
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('commandInRelative')"
+[DEBUG]       Found command match: 'commandInRelative'
+[DEBUG]         Added command usage 'commandInRelative' to com.example.IncludeTestViewModel (fallback)
+[DEBUG]   Found include, recursing into: /absolute/included_absolute.zul
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/absolute/included_absolute.zul
+[DEBUG]   Using context map for this ZUL: {'vm': 'com.example.IncludeTestViewModel'}
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('commandInAbsolute')"
+[DEBUG]       Found command match: 'commandInAbsolute'
+[DEBUG]         Added command usage 'commandInAbsolute' to com.example.IncludeTestViewModel (fallback)
+[DEBUG] Parsing ZUL file: sample_project/src/main/webapp/includes/relative/included_relative.zul
+[DEBUG]   Using context map for this ZUL: {}
+[DEBUG]     Scanning element <button>, attribute 'onClick', value: "@command('commandInRelative')"
+[DEBUG]       Found command match: 'commandInRelative'
+[DEBUG] --- Starting Final Analysis Phase ---
+[DEBUG] ZUL Usages Found: {'com.example.NestedMainViewModel': {'com.example.NestedMainViewModel', 'saveAll', 'mainTitle'}, 'com.example.NestedDetailViewModel': {'detailInfo', 'saveDetail', 'com.example.NestedDetailViewModel'}, 'com.example.UserViewModel': {'commonBaseFunction', 'com.example.UserViewModel', 'username', 'saveUser'}, 'com.example.ParentViewModel': {'parentMessage', 'actionFromIncluded', 'com.example.ParentViewModel'}, 'com.example.QuoteTestViewModel': {'aCommandWithDoubleClick', 'com.example.QuoteTestViewModel'}, 'com.example.AdvancedViewModel': {'com.example.AdvancedViewModel', 'user', 'getDynamicValue', 'runFromZscript'}, 'com.example.OrderViewModel': {'orderId', 'submitOrder', 'refreshOrders', 'com.example.OrderViewModel'}, 'com.example.IncludeTestViewModel': {'commandInRelative', 'commandInAbsolute', 'commandInMain', 'com.example.IncludeTestViewModel'}}
+[DEBUG] Processing ZUL usages for ViewModel: com.example.NestedMainViewModel
+[DEBUG]   Processing usage 'com.example.NestedMainViewModel'
+[DEBUG]   Processing usage 'saveAll'
+[DEBUG]     Marking 'saveAll' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'mainTitle'
+[DEBUG]     Marking 'getMainTitle' as used in ZUL (getter/setter match for 'mainTitle')
+[DEBUG] Processing ZUL usages for ViewModel: com.example.NestedDetailViewModel
+[DEBUG]   Processing usage 'detailInfo'
+[DEBUG]     Marking 'getDetailInfo' as used in ZUL (getter/setter match for 'detailInfo')
+[DEBUG]   Processing usage 'saveDetail'
+[DEBUG]     Marking 'saveDetail' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'com.example.NestedDetailViewModel'
+[DEBUG] Processing ZUL usages for ViewModel: com.example.UserViewModel
+[DEBUG]   Processing usage 'commonBaseFunction'
+[DEBUG]     Marking 'commonBaseFunction' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'com.example.UserViewModel'
+[DEBUG]   Processing usage 'username'
+[DEBUG]     Marking 'getUsername' as used in ZUL (getter/setter match for 'username')
+[DEBUG]     Marking 'setUsername' as used in ZUL (getter/setter match for 'username')
+[DEBUG]   Processing usage 'saveUser'
+[DEBUG]     Marking 'saveUser' as used in ZUL (direct or command match)
+[DEBUG] Processing ZUL usages for ViewModel: com.example.ParentViewModel
+[DEBUG]   Processing usage 'parentMessage'
+[DEBUG]     Marking 'getParentMessage' as used in ZUL (getter/setter match for 'parentMessage')
+[DEBUG]   Processing usage 'actionFromIncluded'
+[DEBUG]     Marking 'actionFromIncluded' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'com.example.ParentViewModel'
+[DEBUG] Processing ZUL usages for ViewModel: com.example.QuoteTestViewModel
+[DEBUG]   Processing usage 'aCommandWithDoubleClick'
+[DEBUG]     Marking 'aCommandWithDoubleClick' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'com.example.QuoteTestViewModel'
+[DEBUG] Processing ZUL usages for ViewModel: com.example.AdvancedViewModel
+[DEBUG]   Processing usage 'com.example.AdvancedViewModel'
+[DEBUG]   Processing usage 'user'
+[DEBUG]     Marking 'getUser' as used in ZUL (getter/setter match for 'user')
+[DEBUG]   Processing usage 'getDynamicValue'
+[DEBUG]     Marking 'getDynamicValue' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'runFromZscript'
+[DEBUG]     Marking 'runFromZscript' as used in ZUL (direct or command match)
+[DEBUG] Processing ZUL usages for ViewModel: com.example.OrderViewModel
+[DEBUG]   Processing usage 'orderId'
+[DEBUG]     Marking 'getOrderId' as used in ZUL (getter/setter match for 'orderId')
+[DEBUG]     Marking 'setOrderId' as used in ZUL (getter/setter match for 'orderId')
+[DEBUG]   Processing usage 'submitOrder'
+[DEBUG]     Marking 'doSubmit' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'refreshOrders'
+[DEBUG]     Marking 'refresh' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'com.example.OrderViewModel'
+[DEBUG] Processing ZUL usages for ViewModel: com.example.IncludeTestViewModel
+[DEBUG]   Processing usage 'commandInRelative'
+[DEBUG]     Marking 'commandInRelative' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'commandInAbsolute'
+[DEBUG]     Marking 'commandInAbsolute' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'commandInMain'
+[DEBUG]     Marking 'commandInMain' as used in ZUL (direct or command match)
+[DEBUG]   Processing usage 'com.example.IncludeTestViewModel'
+[DEBUG] --- Propagating usage status up the inheritance chain ---
+[DEBUG] --- Identifying unused methods ---
+[DEBUG] Checking ViewModel: com.example.AdvancedViewModel
+[DEBUG]   Method 'getUser' is USED.
+[DEBUG]   Method 'getDynamicValue' is USED.
+[DEBUG]   Method 'runFromZscript' is USED.
+[DEBUG] Checking ViewModel: com.example.BaseViewModel
+[DEBUG]   Method 'commonBaseFunction' is USED.
+[DEBUG]   Method 'toOverride' is USED.
+[DEBUG] Checking ViewModel: com.example.CompletelyUnusedViewModel
+[DEBUG]   ViewModel is completely unused.
+[DEBUG] Checking ViewModel: com.example.GlobalCommandTestViewModel
+[DEBUG]   Method 'aGlobalCommand' is USED.
+[DEBUG] Checking ViewModel: com.example.IncludeTestViewModel
+[DEBUG]   Method 'commandInMain' is USED.
+[DEBUG]   Method 'commandInRelative' is USED.
+[DEBUG]   Method 'commandInAbsolute' is USED.
+[DEBUG] Checking ViewModel: com.example.NestedDetailViewModel
+[DEBUG]   Method 'saveDetail' is USED.
+[DEBUG]   Method 'getDetailInfo' is USED.
+[DEBUG] Checking ViewModel: com.example.NestedMainViewModel
+[DEBUG]   Method 'saveAll' is USED.
+[DEBUG]   Method 'getMainTitle' is USED.
+[DEBUG] Checking ViewModel: com.example.OrderViewModel
+[DEBUG]   Method 'getOrderId' is USED.
+[DEBUG]   Method 'setOrderId' is USED.
+[DEBUG]   Method 'doSubmit' is USED.
+[DEBUG]   Method 'refresh' is USED.
+[DEBUG] Checking ViewModel: com.example.ParentViewModel
+[DEBUG]   Method 'getParentMessage' is USED.
+[DEBUG]   Method 'actionFromIncluded' is USED.
+[DEBUG] Checking ViewModel: com.example.QuoteTestViewModel
+[DEBUG]   Method 'aCommandWithDoubleClick' is USED.
+[DEBUG]   Method 'anUnusedCommand' is UNUSED. Reason: used_in_java=False, used_in_zul=False, annotations=['@Command    public v']
+[DEBUG] Checking ViewModel: com.example.UserViewModel
+[DEBUG]   Method 'init' is USED.
+[DEBUG]   Method 'getUsername' is USED.
+[DEBUG]   Method 'setUsername' is USED.
+[DEBUG]   Method 'saveUser' is USED.
+[DEBUG]   Method 'processInternalData' is USED.
+[DEBUG]   Method 'unusedMethod' is UNUSED. Reason: used_in_java=False, used_in_zul=False, annotations=[]
+[DEBUG]   Method 'toOverride' is USED.
+# Unused ViewModel Methods Report
+
+## Completely Unused ViewModels
+
+- **com.example.CompletelyUnusedViewModel** (at `sample_project/src/main/java/com/example/CompletelyUnusedViewModel.java`)
+
+## Unused Methods in Active ViewModels
+
+
+### ViewModel: `com.example.QuoteTestViewModel`
+- Method: `anUnusedCommand` (line 12)
+
+### ViewModel: `com.example.UserViewModel`
+- Method: `unusedMethod` (line 38)
+
+Report saved to unused_viewmodel_report.md

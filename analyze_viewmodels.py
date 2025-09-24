@@ -246,7 +246,16 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
     for include in xml_root.iter('include'):
         if src := include.attrib.get('src'):
             log_debug(f"  Found include, recursing into: {src}")
-            included_path = os.path.join(webapp_root, src.lstrip('/'))
+            if src.startswith('/'):
+                # Path is relative to webapp root
+                included_path = os.path.join(webapp_root, src.lstrip('/'))
+            else:
+                # Path is relative to the current file's directory
+                current_dir = os.path.dirname(file_path)
+                included_path = os.path.join(current_dir, src)
+
+            # Normalize the path to handle ".." etc.
+            included_path = os.path.normpath(included_path)
             find_zul_usages_recursive(included_path, webapp_root, all_usages, context_map, visited)
 
 def find_zul_usages(project_path):

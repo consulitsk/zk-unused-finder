@@ -12,6 +12,3 @@
 
 ### ViewModel: `com.example.UserViewModel`
 - Method: `unusedMethod` (line 38)
-
-### ViewModel: `com.example.WhitespaceTestViewModel`
-- Method: `getUnusedProperty` (line 11)

@@ -1,0 +1,4 @@
+<!-- This file is included from /includes/main.zul and uses the same viewmodel -->
+<vbox>
+    <button onClick="@command('commandInAbsolute')" />
+</vbox>
