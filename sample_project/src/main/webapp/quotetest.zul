@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window viewModel="@id('vm') @init('com.example.QuoteTestViewModel')">
+    <button onClick="@command('aCommandWithDoubleClick')" />
+</window>
