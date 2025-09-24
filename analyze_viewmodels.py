@@ -146,7 +146,7 @@ def analyze_java_files(project_path):
 ZUL_VM_ID_REGEX = re.compile(r"@id\('([^']*)'\)")
 ZUL_VM_INIT_REGEX = re.compile(r"@init\('([^']*)'\)")
 COMMAND_REGEX = re.compile(r"""@(?:global-)?command\(['"]([^'"]*)['"][,)]""")
-MEMBER_ACCESS_REGEX = re.compile(r"([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)")
+MEMBER_ACCESS_REGEX = re.compile(r"([a-zA-Z0-9_]+)\s*\.\s*([a-zA-Z0-9_]+)")
 
 def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context=None, visited=None):
     if visited is None: visited = set()

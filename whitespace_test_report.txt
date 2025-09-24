@@ -1,3 +1,5 @@
+Analyzing project: sample_project...
+
 # Unused ViewModel Methods Report
 
 ## Completely Unused ViewModels
@@ -15,3 +17,5 @@
 
 ### ViewModel: `com.example.WhitespaceTestViewModel`
 - Method: `getUnusedProperty` (line 11)
+
+Report saved to unused_viewmodel_report.md
