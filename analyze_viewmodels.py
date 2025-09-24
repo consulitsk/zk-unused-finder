@@ -561,11 +561,12 @@ def main():
         return
 
     print(f"Analyzing project: {args.project_path}...\n")
-    log_debug("Caching all project file paths...")
+    log_debug("Caching all .zul file paths for partial match heuristic...")
     for root, _, files in os.walk(args.project_path):
         for file in files:
-            ALL_PROJECT_FILES.append(os.path.join(root, file))
-    log_debug(f"Cached {len(ALL_PROJECT_FILES)} file paths.")
+            if file.endswith(".zul"):
+                ALL_PROJECT_FILES.append(os.path.join(root, file))
+    log_debug(f"Cached {len(ALL_PROJECT_FILES)} .zul file paths.")
 
     vms, asts = analyze_java_files(args.project_path)
     zul_usages = find_zul_usages(args.project_path, args.partial_match)
