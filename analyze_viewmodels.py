@@ -10,11 +10,26 @@ import difflib
 CACHE_FILE = ".viewmodel_analysis_cache.json"
 resolved_constants = {}
 VERBOSE = False
+IGNORED_ANNOTATIONS = set()
+ALL_PROJECT_FILES = []
 
 def log_debug(message):
     """Prints a debug message if verbose mode is enabled."""
     if VERBOSE:
         print(f"[DEBUG] {message}")
+
+def load_ignored_annotations(filepath="annotations.txt"):
+    """Loads the set of annotations to ignore from a file."""
+    global IGNORED_ANNOTATIONS
+    if not os.path.exists(filepath):
+        log_debug(f"Annotation file not found at '{filepath}'. No annotations will be ignored.")
+        return
+    try:
+        with open(filepath, 'r') as f:
+            IGNORED_ANNOTATIONS = {line.strip() for line in f if line.strip() and not line.startswith('#')}
+        log_debug(f"Loaded {len(IGNORED_ANNOTATIONS)} annotations to ignore from '{filepath}': {IGNORED_ANNOTATIONS}")
+    except IOError as e:
+        print(f"Warning: Could not read annotation file '{filepath}': {e}")
 
 def load_cache():
     """Loads the user decision cache from a file."""
@@ -71,7 +86,9 @@ class MethodInfo:
         return None
     def is_used(self):
         for ann_text in self.annotations_text:
-            if any(ann_text.startswith(lifecycle_ann) for lifecycle_ann in ['@Init', '@AfterCompose', '@Destroy', '@GlobalCommand']): return True
+            if any(ann_text.startswith(ignored) for ignored in IGNORED_ANNOTATIONS):
+                log_debug(f"    Method '{self.name}' is ignored due to annotation: {ann_text}")
+                return True
         return self.used_in_java or self.used_in_zul
 
 class ViewModelInfo:
@@ -170,7 +187,7 @@ ZUL_VM_INIT_REGEX = re.compile(r"@init\('([^']*)'\)")
 COMMAND_REGEX = re.compile(r"""@(?:global-)?command\(['"]([^'"]*)['"][,)]""")
 MEMBER_ACCESS_REGEX = re.compile(r"([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)")
 
-def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context=None, visited=None):
+def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match, parent_context=None, visited=None):
     if visited is None: visited = set()
     abs_path = os.path.abspath(file_path)
     if abs_path in visited: return
@@ -246,6 +263,24 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
     for include in xml_root.iter('include'):
         if src := include.attrib.get('src'):
             log_debug(f"  Found include, recursing into: {src}")
+
+            # Heuristic for dynamic includes
+            if partial_match and '${' in src:
+                log_debug(f"    Dynamic include detected. Applying partial match heuristic.")
+                # Extract the static part of the filename
+                static_part = re.sub(r'\$\{.*?\}', '', src).lstrip('/')
+                log_debug(f"    Searching for files ending with: '{static_part}'")
+
+                found_matches = False
+                for proj_file in ALL_PROJECT_FILES:
+                    if proj_file.endswith(static_part):
+                        log_debug(f"      Found partial match: {proj_file}. Analyzing.")
+                        find_zul_usages_recursive(proj_file, webapp_root, all_usages, partial_match, context_map, visited)
+                        found_matches = True
+                if not found_matches:
+                    log_debug(f"      No partial matches found for '{static_part}'.")
+                continue
+
             if src.startswith('/'):
                 # Path is relative to webapp root
                 included_path = os.path.join(webapp_root, src.lstrip('/'))
@@ -256,9 +291,9 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, parent_context
 
             # Normalize the path to handle ".." etc.
             included_path = os.path.normpath(included_path)
-            find_zul_usages_recursive(included_path, webapp_root, all_usages, context_map, visited)
+            find_zul_usages_recursive(included_path, webapp_root, all_usages, partial_match, context_map, visited)
 
-def find_zul_usages(project_path):
+def find_zul_usages(project_path, partial_match):
     all_usages = defaultdict(set)
 
     webapp_roots = []
@@ -279,7 +314,7 @@ def find_zul_usages(project_path):
             for file in files:
                 if file.endswith(".zul"):
                     file_path = os.path.join(root, file)
-                    find_zul_usages_recursive(file_path, webapp_root, all_usages)
+                    find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match)
 
     return all_usages
 
@@ -509,10 +544,13 @@ def main():
     parser.add_argument("--interactive", action="store_true", help="Enable interactive mode to generate removal patches.")
     parser.add_argument("--reset-cache", action="store_true", help="Reset the cache of user decisions.")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging for debugging.")
+    parser.add_argument("--no-partial-match", action="store_false", dest="partial_match", help="Disable the heuristic for finding dynamic includes by partial name match.")
     args = parser.parse_args()
 
     global VERBOSE
     VERBOSE = args.verbose
+
+    load_ignored_annotations()
 
     if args.reset_cache:
         if os.path.exists(CACHE_FILE):
@@ -523,8 +561,14 @@ def main():
         return
 
     print(f"Analyzing project: {args.project_path}...\n")
+    log_debug("Caching all project file paths...")
+    for root, _, files in os.walk(args.project_path):
+        for file in files:
+            ALL_PROJECT_FILES.append(os.path.join(root, file))
+    log_debug(f"Cached {len(ALL_PROJECT_FILES)} file paths.")
+
     vms, asts = analyze_java_files(args.project_path)
-    zul_usages = find_zul_usages(args.project_path)
+    zul_usages = find_zul_usages(args.project_path, args.partial_match)
     analyze_java_usages(asts, vms)
     run_analysis(vms, zul_usages)
 
