@@ -31,4 +31,8 @@ public class OrderViewModel extends BaseViewModel {
         // This is a global command.
         System.out.println("Refreshing all orders.");
     }
+
+    public void unusedMethod() {
+        // This method is not used anywhere.
+    }
 }
