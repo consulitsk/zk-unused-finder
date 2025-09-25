@@ -218,8 +218,8 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
                 all_usages[fqdn].add(fqdn)
                 log_debug(f"  Mapped local alias '{alias}' to FQDN '{fqdn}'")
 
-    context_map = local_vm_map if has_local_vm or not parent_context else parent_context
-    log_debug(f"  Using context map for this ZUL: {context_map}")
+    context_for_this_file = local_vm_map if has_local_vm else parent_context
+    log_debug(f"  Using context map for this ZUL: {context_for_this_file}")
 
     for elem in xml_root.iter():
         # Scan attributes
@@ -233,21 +233,21 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
                     if vm_attrib := curr.attrib.get('viewModel'):
                         if id_m := ZUL_VM_ID_REGEX.search(vm_attrib):
                             alias = id_m.group(1)
-                            if alias in context_map:
-                                all_usages[context_map[alias]].add(cmd)
-                                log_debug(f"        Added command usage '{cmd}' to {context_map[alias]}")
+                            if context_for_this_file and alias in context_for_this_file:
+                                all_usages[context_for_this_file[alias]].add(cmd)
+                                log_debug(f"        Added command usage '{cmd}' to {context_for_this_file[alias]}")
                                 break
                     curr = parent_map[curr]
                 else: # Fallback for root element or no context found
-                    if 'vm' in context_map:
-                        all_usages[context_map['vm']].add(cmd)
-                        log_debug(f"        Added command usage '{cmd}' to {context_map['vm']} (fallback)")
+                    if context_for_this_file and 'vm' in context_for_this_file:
+                        all_usages[context_for_this_file['vm']].add(cmd)
+                        log_debug(f"        Added command usage '{cmd}' to {context_for_this_file['vm']} (fallback)")
             # Member access
             for alias, member in MEMBER_ACCESS_REGEX.findall(value):
                 log_debug(f"      Found member access match: alias='{alias}', member='{member}'")
-                if alias in context_map:
-                    all_usages[context_map[alias]].add(member.split('.')[0])
-                    log_debug(f"        Added member usage '{member}' to {context_map[alias]}")
+                if context_for_this_file and alias in context_for_this_file:
+                    all_usages[context_for_this_file[alias]].add(member.split('.')[0])
+                    log_debug(f"        Added member usage '{member}' to {context_for_this_file[alias]}")
 
         # Scan text and zscript
         scan_text = (elem.text or "") + (elem.find('.//zscript').text if elem.find('.//zscript') is not None and elem.find('.//zscript').text else "")
@@ -255,9 +255,9 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
             log_debug(f"    Scanning text/zscript content of <{elem.tag}>")
             for alias, member in MEMBER_ACCESS_REGEX.findall(scan_text):
                 log_debug(f"      Found member access match in text: alias='{alias}', member='{member}'")
-                if alias in context_map:
-                    all_usages[context_map[alias]].add(member)
-                    log_debug(f"        Added member usage '{member}' to {context_map[alias]}")
+                if alias in context_for_this_file:
+                    all_usages[context_for_this_file[alias]].add(member)
+                    log_debug(f"        Added member usage '{member}' to {context_for_this_file[alias]}")
 
     # Handle includes
     for include in xml_root.iter('include'):
@@ -275,7 +275,7 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
                 for proj_file in ALL_PROJECT_FILES:
                     if proj_file.endswith(static_part):
                         log_debug(f"      Found partial match: {proj_file}. Analyzing.")
-                        find_zul_usages_recursive(proj_file, webapp_root, all_usages, partial_match, context_map, visited)
+                        find_zul_usages_recursive(proj_file, webapp_root, all_usages, partial_match, context_for_this_file, visited)
                         found_matches = True
                 if not found_matches:
                     log_debug(f"      No partial matches found for '{static_part}'.")
@@ -291,7 +291,7 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
 
             # Normalize the path to handle ".." etc.
             included_path = os.path.normpath(included_path)
-            find_zul_usages_recursive(included_path, webapp_root, all_usages, partial_match, context_map, visited)
+            find_zul_usages_recursive(included_path, webapp_root, all_usages, partial_match, context_for_this_file, visited)
 
 def find_zul_usages(project_path, partial_match):
     all_usages = defaultdict(set)
