@@ -1,0 +1,3 @@
+<hbox>
+    <button onClick="@command('commandInDynamicB')" />
+</hbox>

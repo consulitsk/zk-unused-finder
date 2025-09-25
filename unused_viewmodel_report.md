@@ -10,8 +10,5 @@
 ### ViewModel: `com.example.QuoteTestViewModel`
 - Method: `anUnusedCommand` (line 12)
 
-### ViewModel: `com.example.TestViewModel`
-- Method: `unusedTestMethod` (line 13)
-
 ### ViewModel: `com.example.UserViewModel`
 - Method: `unusedMethod` (line 38)

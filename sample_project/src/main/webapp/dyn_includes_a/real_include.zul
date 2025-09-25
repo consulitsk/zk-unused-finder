@@ -1,0 +1,3 @@
+<vbox>
+    <button onClick="@command('commandInDynamicA')" />
+</vbox>

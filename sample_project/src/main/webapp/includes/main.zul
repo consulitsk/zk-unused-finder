@@ -1,0 +1,9 @@
+<window viewModel="@id('vm') @init('com.example.IncludeTestViewModel')">
+    <button onClick="@command('commandInMain')" />
+
+    <!-- Relative include -->
+    <include src="relative/included_relative.zul" />
+
+    <!-- Absolute include -->
+    <include src="/absolute/included_absolute.zul" />
+</window>
