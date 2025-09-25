@@ -1,0 +1,3 @@
+<window viewModel="@id('vm') @init('com.example.nested.NestedIncludeViewModel')">
+    <include src="components/level1.zul" />
+</window>

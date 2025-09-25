@@ -36,7 +36,7 @@ class TestViewModelAnalyzer(unittest.TestCase):
 
     def test_java_parsing_finds_all_viewmodels(self):
         """Tests if all ViewModel classes are found."""
-        self.assertEqual(len(self.view_models), 12)
+        self.assertEqual(len(self.view_models), 13)
         # Check for a few specific ViewModels
         self.assertIn("com.example.OrderViewModel", self.view_models)
         self.assertIn("com.example.UserViewModel", self.view_models)
@@ -83,6 +83,30 @@ class TestViewModelAnalyzer(unittest.TestCase):
         # Check for the unused method in OrderViewModel
         self.assertIn("OrderViewModel", report)
         self.assertIn("unusedMethod", report)
+
+    def test_nested_include_with_shared_path_segment(self):
+        """
+        Tests that a nested include, where the path shares a segment with the
+        parent's location, is resolved correctly and the ViewModel context is passed.
+
+        Structure:
+        - /nested/main.zul (defines vm) -> <include src="components/level1.zul">
+        - /nested/components/level1.zul -> <include src="components/level2.zul">
+        - /nested/components/level2.zul (uses vm)
+        """
+        vm_fqdn = "com.example.nested.NestedIncludeViewModel"
+        self.assertIn(vm_fqdn, self.view_models, "NestedIncludeViewModel not found.")
+
+        vm_info = self.view_models[vm_fqdn]
+
+        # The 'doSomething' method should be marked as used because it's in the deepest child.
+        self.assertTrue(vm_info.methods['doSomething'].is_used(),
+                        "Method 'doSomething' in NestedIncludeViewModel should be marked as used.")
+
+        # The 'unusedNestedMethod' should be correctly identified as unused.
+        self.assertFalse(vm_info.methods['unusedNestedMethod'].is_used(),
+                         "Method 'unusedNestedMethod' in NestedIncludeViewModel should be marked as unused.")
+
 
 if __name__ == '__main__':
     unittest.main()

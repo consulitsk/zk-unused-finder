@@ -1,0 +1,1 @@
+<button label="Click Me" onClick="@command('doSomething')" />

@@ -290,10 +290,17 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
             else:
                 # Path is relative to the current file's directory
                 current_dir = os.path.dirname(file_path)
-                included_path = os.path.join(current_dir, src)
+                # Check if the start of the 'src' path is already in the 'current_dir' path
+                # to avoid duplication like 'components/components'
+                src_parts = src.split('/')
+                if len(src_parts) > 1 and current_dir.endswith(src_parts[0]):
+                     included_path = os.path.join(os.path.dirname(current_dir), src)
+                else:
+                     included_path = os.path.join(current_dir, src)
 
             # Normalize the path to handle ".." etc.
             included_path = os.path.normpath(included_path)
+            log_debug(f"    Resolved include path: {included_path}")
             find_zul_usages_recursive(included_path, webapp_root, all_usages, partial_match, context_for_this_file, visited)
 
 def find_zul_usages(project_path, partial_match):
