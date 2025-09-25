@@ -218,7 +218,10 @@ def find_zul_usages_recursive(file_path, webapp_root, all_usages, partial_match,
                 all_usages[fqdn].add(fqdn)
                 log_debug(f"  Mapped local alias '{alias}' to FQDN '{fqdn}'")
 
-    context_for_this_file = local_vm_map if has_local_vm else parent_context
+    # Start with a copy of the parent's context (or an empty dict)
+    context_for_this_file = (parent_context or {}).copy()
+    if has_local_vm:
+        context_for_this_file.update(local_vm_map)
     log_debug(f"  Using context map for this ZUL: {context_for_this_file}")
 
     for elem in xml_root.iter():

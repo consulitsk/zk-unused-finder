@@ -1,9 +1,0 @@
-# This file contains a list of annotations that, if present on a method,
-# will cause the method to be ignored by the unused method analyzer.
-# Add one annotation per line, including the '@' symbol.
-
-@Override
-@Init
-@AfterCompose
-@Destroy
-@GlobalCommand
